@@ -74,7 +74,6 @@ char *infixaParaPosFixa(char *expInfixa) {
     int tamanho = strlen(expInfixa);
     expPosFixa = malloc(sizeof(char) * (tamanho+1));
     pilha P = criarPilha();
-    empilhar(P, expInfixa[0]); 
     //
     int j = 0;
     for (int i = 1; expInfixa[i] != '\0'; i++) { //expInfixa[0] = '('.
