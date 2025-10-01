@@ -123,6 +123,7 @@ char *infixaParaPosFixa(char *expInfixa) {
         }
     }
     expPosFixa[j] = '\0';
+    liberarPilha(P);
     return expPosFixa;
 }
 
@@ -156,6 +157,12 @@ int bemFormada(char *expInfixa) {
             default:
             empilhar(P, expInfixa[i]);
         }
+    } if (pilhaVazia(P)) {
+        liberarPilha(P);
+        return 1;
+    } else {
+        liberarPilha(P);
+        return 0;
     }
 }
 
