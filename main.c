@@ -16,20 +16,20 @@ typedef struct Pilha {
 pilha criarPilha(); //protótipo da função para criar pilha de forma dinamica na heap
 void empilhar(pilha P, char c); //protótipo da função para inserir um novo elemento no topo da pilha
 char desempilhar(pilha P); //protótipo da função para remover o elemento do tipo da pilha e depois retornar o respectivo caractere
-int pilhaVazia(pilha P); //protótipo da função para verificar se a pilha tá vazia
-char *infixaParaPosFixa(char *expInfixa); //protótipo da função para converter notação infixa para notação posfixa
-int verificarEstruturaInfixa(char *expInfixa); //protótipo da função para verificar se a notação infixa tem ( ) e [ ] corretos
+int verificarPilhaVazia(pilha P); //protótipo da função para verificar se a pilha tá vazia
+char *notacaoInfixaParaPosfixa(char *notacaoInfixa); //protótipo da função para converter notação infixa para notação posfixa
+int verificarEstruturaInfixa(char *notacaoInfixa); //protótipo da função para verificar se a notação infixa tem ( ) e [ ] corretos
 void liberarElementos(elemento *elem); //protótipo da função para liberar todos os elementos da pilha
 void liberarPilha(pilha P); //protótipo da função para liberar a pilha da heap
 
 int main() {
-    char expInfixa[TAM_MAX];
-    char *expPosFixa;
-    scanf("%[^\n]", expInfixa);
-    if (verificarEstruturaInfixa(expInfixa)) { //estrutura condicional para verificar se a notação infixa está na estrutura correta
-        expPosFixa = infixaParaPosFixa(expInfixa);
-        printf("%s\n", expPosFixa);
-        free(expPosFixa);
+    char notacaoInfixa[TAM_MAX];
+    char *notacaoPosfixa;
+    scanf("%[^\n]", notacaoInfixa);
+    if (verificarEstruturaInfixa(notacaoInfixa)) { //estrutura condicional para verificar se a notação infixa está na estrutura correta
+        notacaoPosfixa = notacaoInfixaParaPosfixa(notacaoInfixa);
+        printf("%s\n", notacaoPosfixa);
+        free(notacaoPosfixa);
     }
     return 0;
 }
@@ -46,7 +46,7 @@ pilha criarPilha() {
 void empilhar(pilha P, char c) {
     elemento *elem;
     elem = malloc(sizeof(elemento));
-    if (elem == NULL) { //verifica se a alocação dinamica do elemento na heap deu certo
+    if (elem == NULL) { //verifica se a alocação dinamica da memoria para o elemento na heap deu certo
         return;
     }
     elem->proximo = P->topo;
@@ -68,82 +68,82 @@ char desempilhar(pilha P) {
     return c_auxiliar;
 }
 
-char *infixaParaPosFixa(char *expInfixa) {
-    char *expPosFixa;
+char *notacaoInfixaParaPosfixa(char *notacaoInfixa) {
+    char *notacaoPosfixa;
     char caractere;
-    int tamanho = strlen(expInfixa);
-    expPosFixa = malloc(sizeof(char) * (tamanho+1));
-    if (expPosFixa == NULL) {
+    int tamanho = strlen(notacaoInfixa);
+    notacaoPosfixa = malloc(sizeof(char) * (tamanho+1)); //alocar memória na heap para a notacao posfixa (tamanho+1 por causa do \0 no final)
+    if (notacaoPosfixa == NULL) { //verificar se a alocação dinamica da memoria para a notacao posfixa na heap deu certo
         return NULL;
     }
-    pilha P = criarPilha();
+    pilha P = criarPilha(); //chama a funcao para criar pilha para guardar os operadoes (+ - * / ^) para a conversao infixa -> posfixa
     if (P == NULL) {
-        free(expPosFixa);
+        free(notacaoPosfixa);
         return NULL;
     }
 
     int j = 0;
-    for (int i = 0; expInfixa[i] != '\0'; i++) {
-        switch(expInfixa[i]) {
+    for (int i = 0; notacaoInfixa[i] != '\0'; i++) {
+        switch(notacaoInfixa[i]) {
             case '(': 
-            empilhar(P, expInfixa[i]);
+            empilhar(P, notacaoInfixa[i]);
             break;
 
             case ')':
             caractere = desempilhar(P);
             while (caractere != '(') {
-                expPosFixa[j++] = caractere;
+                notacaoPosfixa[j++] = caractere;
                 caractere = desempilhar(P);
             }
             break;
 
             case '+':
             case '-':
-            while (!pilhaVazia(P) && P->topo->caractere != '(' && (P->topo->caractere == '+' || P->topo->caractere == '-' || P->topo->caractere == '/' || P->topo->caractere == '*')) { 
-                expPosFixa[j++] = desempilhar(P);
-            } empilhar(P, expInfixa[i]);
+            while (!verificarPilhaVazia(P) && P->topo->caractere != '(' && (P->topo->caractere == '+' || P->topo->caractere == '-' || P->topo->caractere == '/' || P->topo->caractere == '*')) { 
+                notacaoPosfixa[j++] = desempilhar(P);
+            } empilhar(P, notacaoInfixa[i]);
             break;
 
             case '*':
             case '/':
-            while (!pilhaVazia(P) && P->topo->caractere != '(' && (P->topo->caractere == '/' || P->topo->caractere == '*')) {
-                expPosFixa[j++] = desempilhar(P);
-            } empilhar(P, expInfixa[i]);
+            while (!verificarPilhaVazia(P) && P->topo->caractere != '(' && (P->topo->caractere == '/' || P->topo->caractere == '*')) {
+                notacaoPosfixa[j++] = desempilhar(P);
+            } empilhar(P, notacaoInfixa[i]);
             break;
 
             case '^':
-            while (!pilhaVazia(P) && P->topo->caractere == '^') {
-                expPosFixa[j++] = desempilhar(P);
-            } empilhar(P, expInfixa[i]);
+            while (!verificarPilhaVazia(P) && P->topo->caractere == '^') {
+                notacaoPosfixa[j++] = desempilhar(P);
+            } empilhar(P, notacaoInfixa[i]);
             break;
 
             default:
-            expPosFixa[j++] = expInfixa[i];
+            notacaoPosfixa[j++] = notacaoInfixa[i];
         }
     } 
     
-    while (!pilhaVazia(P)) {
-        expPosFixa[j++] = desempilhar(P);
+    while (!verificarPilhaVazia(P)) {
+        notacaoPosfixa[j++] = desempilhar(P);
     }
 
-    expPosFixa[j] = '\0';
+    notacaoPosfixa[j] = '\0';
     liberarPilha(P);
-    return expPosFixa;
+    return notacaoPosfixa;
 }
 
-int verificarEstruturaInfixa(char *expInfixa) {
+int verificarEstruturaInfixa(char *notacaoInfixa) {
     char caractere;
     pilha P = criarPilha();
 
-    for (int i = 0; expInfixa[i] != '\0'; i++) {
-        switch (expInfixa[i]) {
+    for (int i = 0; notacaoInfixa[i] != '\0'; i++) {
+        switch (notacaoInfixa[i]) {
             case '[':
             case '(':
-            empilhar(P, expInfixa[i]);
+            empilhar(P, notacaoInfixa[i]);
             break;
 
             case ')':
-            if (pilhaVazia(P)) {
+            if (verificarPilhaVazia(P)) {
                 liberarPilha(P);
                 return 0;
             }
@@ -155,7 +155,7 @@ int verificarEstruturaInfixa(char *expInfixa) {
             break;
 
             case ']':
-            if (pilhaVazia(P)) {
+            if (verificarPilhaVazia(P)) {
                 liberarPilha(P);
                 return 0;
             }
@@ -169,7 +169,7 @@ int verificarEstruturaInfixa(char *expInfixa) {
             default:
             break;
         }
-    } if (pilhaVazia(P)) {
+    } if (verificarPilhaVazia(P)) {
         liberarPilha(P);
         return 1;
     } else {
@@ -193,7 +193,7 @@ void liberarPilha(pilha P) {
     return;
 }
 
-int pilhaVazia(pilha P){
+int verificarPilhaVazia(pilha P){
     if(P == NULL || P->topo == NULL){
         return 1;
     }
