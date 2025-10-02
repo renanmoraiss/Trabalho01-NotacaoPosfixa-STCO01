@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define TAM_MAX 100
+#define TAM_MAX 1000
 
 struct Elemento {
     char caractere;
@@ -27,8 +27,7 @@ void liberarPilha(pilha P); //limpar topo da pilha.
 int main() {
     char expInfixa[TAM_MAX];
     char *expPosFixa;
-    printf("String de entrada: ");
-    scanf("%s", expInfixa);
+    scanf("%[^\n]", expInfixa);
     if (bemFormada(expInfixa)) {
         expPosFixa = infixaParaPosFixa(expInfixa);
         printf("%s\n", expPosFixa);
@@ -71,6 +70,7 @@ char desempilhar(pilha P) {
 //função para converter uma expressão infixa em posfixa.
 char *infixaParaPosFixa(char *expInfixa) {
     char *expPosFixa;
+    char caractere;
     int tamanho = strlen(expInfixa);
     expPosFixa = malloc(sizeof(char) * (tamanho+1));
     pilha P = criarPilha();
@@ -78,7 +78,6 @@ char *infixaParaPosFixa(char *expInfixa) {
     int j = 0;
     for (int i = 0; expInfixa[i] != '\0'; i++) {
         switch(expInfixa[i]) {
-            char caractere;
             case '(': 
             empilhar(P, expInfixa[i]);
             break;
@@ -93,28 +92,28 @@ char *infixaParaPosFixa(char *expInfixa) {
             //
             case '+':
             case '-':
-            while (pilhaVazia(P) == 0 && P->topo->caractere != '(' && (P->topo->caractere == '+' || P->topo->caractere == '-' || P->topo->caractere == '/' || P->topo->caractere == '*' || P->topo->caractere == '^')) { //para ter a ordem de precedencia 
-                expPosFixa[j++] = caractere;
+            while (!pilhaVazia(P) && P->topo->caractere != '(' && (P->topo->caractere == '+' || P->topo->caractere == '-' || P->topo->caractere == '/' || P->topo->caractere == '*')) { //para ter a ordem de precedencia 
+                expPosFixa[j++] = desempilhar(P);
             } empilhar(P, expInfixa[i]);
             break;
             //
             case '*':
             case '/':
-            while (pilhaVazia(P) == 0 && P->topo->caractere != '(' && (P->topo->caractere == '/' || P->topo->caractere == '*' || P->topo->caractere == '^')) {
-                expPosFixa[j++] = caractere;
+            while (!pilhaVazia(P) && P->topo->caractere != '(' && (P->topo->caractere == '/' || P->topo->caractere == '*')) {
+                expPosFixa[j++] = desempilhar(P);
             } empilhar(P, expInfixa[i]);
             break;
             //
             case '^':
-            while (pilhaVazia(P) == 0 && P->topo->caractere != '(' && (P->topo->caractere == '^')) {
-                expPosFixa[j++] = caractere;
+            while (!pilhaVazia(P) && P->topo->caractere == '^') {
+                expPosFixa[j++] = desempilhar(P);
             } empilhar(P, expInfixa[i]);
             break;
             //
             default:
             expPosFixa[j++] = expInfixa[i];
         }
-    } while (pilhaVazia(P) == 0) {
+    } while (!pilhaVazia(P)) {
         expPosFixa[j++] = desempilhar(P);
     }
     expPosFixa[j] = '\0';
@@ -136,6 +135,7 @@ int bemFormada(char *expInfixa) {
 
             case ')':
             if (pilhaVazia(P)) {
+                liberarPilha(P);
                 return 0;
             }
             caractere = desempilhar(P);
@@ -146,6 +146,7 @@ int bemFormada(char *expInfixa) {
 
             case ']':
             if (pilhaVazia(P)) {
+                liberarPilha(P);
                 return 0;
             }
             caractere = desempilhar(P);
