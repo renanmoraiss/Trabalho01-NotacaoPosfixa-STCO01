@@ -69,7 +69,7 @@ char desempilhar(pilha P) {
 }
 
 
-char *infixaParaPosFixa(char *expInfixa) {
+char *notacaoInfixaParaPosfixa(char *expInfixa) {
     char *expPosFixa;
     char caractere;
     int tamanho = strlen(expInfixa);
@@ -93,7 +93,7 @@ char *infixaParaPosFixa(char *expInfixa) {
 
             case '+':
             case '-':
-                while (!pilhaVazia(P) && P->topo->caractere != '(' &&
+                while (!verificarPilhaVazia(P) && P->topo->caractere != '(' &&
                        (P->topo->caractere == '+' || P->topo->caractere == '-' ||
                         P->topo->caractere == '*' || P->topo->caractere == '/' ||
                         P->topo->caractere == '^')) {
@@ -105,7 +105,7 @@ char *infixaParaPosFixa(char *expInfixa) {
             case '*':
             case '/':
                 
-                while (!pilhaVazia(P) && P->topo->caractere != '(' &&
+                while (!verificarPilhaVazia(P) && P->topo->caractere != '(' &&
                        (P->topo->caractere == '*' || P->topo->caractere == '/' ||
                         P->topo->caractere == '^')) {
                     expPosFixa[j++] = desempilhar(P);
@@ -122,7 +122,7 @@ char *infixaParaPosFixa(char *expInfixa) {
                 expPosFixa[j++] = expInfixa[i];
         }
     }
-    while (!pilhaVazia(P)) {
+    while (!verificarPilhaVazia(P)) {
         expPosFixa[j++] = desempilhar(P);
     }
     expPosFixa[j] = '\0';
