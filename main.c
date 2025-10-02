@@ -68,67 +68,66 @@ char desempilhar(pilha P) {
     return c_auxiliar;
 }
 
-char *notacaoInfixaParaPosfixa(char *notacaoInfixa) {
-    char *notacaoPosfixa;
+
+char *infixaParaPosFixa(char *expInfixa) {
+    char *expPosFixa;
     char caractere;
-    int tamanho = strlen(notacaoInfixa);
-    notacaoPosfixa = malloc(sizeof(char) * (tamanho+1)); //alocar memória na heap (tamanho+1 por causa do \0 no final)
-    if (notacaoPosfixa == NULL) { //verificar se a alocação dinamica da memoria na heap deu certo
-        return NULL;
-    }
-    pilha P = criarPilha(); //chamar a funcao para criar pilha para guardar os operadoes (+ - * / ^)
-    if (P == NULL) {
-        free(notacaoPosfixa);
-        return NULL;
-    }
+    int tamanho = strlen(expInfixa);
+    expPosFixa = malloc(sizeof(char) * (tamanho+1));
+    pilha P = criarPilha();
 
     int j = 0;
-    for (int i = 0; notacaoInfixa[i] != '\0'; i++) {
-        switch(notacaoInfixa[i]) {
-            case '(': 
-            empilhar(P, notacaoInfixa[i]);
-            break;
+    for (int i = 0; expInfixa[i] != '\0'; i++) {
+        switch(expInfixa[i]) {
+            case '(':
+                empilhar(P, expInfixa[i]);
+                break;
 
             case ')':
-            caractere = desempilhar(P);
-            while (caractere != '(') {
-                notacaoPosfixa[j++] = caractere;
                 caractere = desempilhar(P);
-            }
-            break;
+                while (caractere != '(') {
+                    expPosFixa[j++] = caractere;
+                    caractere = desempilhar(P);
+                }
+                break;
 
             case '+':
             case '-':
-            while (!verificarPilhaVazia(P) && P->topo->caractere != '(' && (P->topo->caractere == '+' || P->topo->caractere == '-' || P->topo->caractere == '/' || P->topo->caractere == '*')) { 
-                notacaoPosfixa[j++] = desempilhar(P);
-            } empilhar(P, notacaoInfixa[i]);
-            break;
+                while (!pilhaVazia(P) && P->topo->caractere != '(' &&
+                       (P->topo->caractere == '+' || P->topo->caractere == '-' ||
+                        P->topo->caractere == '*' || P->topo->caractere == '/' ||
+                        P->topo->caractere == '^')) {
+                    expPosFixa[j++] = desempilhar(P);
+                }
+                empilhar(P, expInfixa[i]);
+                break;
 
             case '*':
             case '/':
-            while (!verificarPilhaVazia(P) && P->topo->caractere != '(' && (P->topo->caractere == '/' || P->topo->caractere == '*')) {
-                notacaoPosfixa[j++] = desempilhar(P);
-            } empilhar(P, notacaoInfixa[i]);
-            break;
+                
+                while (!pilhaVazia(P) && P->topo->caractere != '(' &&
+                       (P->topo->caractere == '*' || P->topo->caractere == '/' ||
+                        P->topo->caractere == '^')) {
+                    expPosFixa[j++] = desempilhar(P);
+                }
+                empilhar(P, expInfixa[i]);
+                break;
 
             case '^':
-            while (!verificarPilhaVazia(P) && P->topo->caractere == '^') {
-                notacaoPosfixa[j++] = desempilhar(P);
-            } empilhar(P, notacaoInfixa[i]);
-            break;
+                
+                empilhar(P, expInfixa[i]);
+                break;
 
             default:
-            notacaoPosfixa[j++] = notacaoInfixa[i];
+                expPosFixa[j++] = expInfixa[i];
         }
-    } 
-    
-    while (!verificarPilhaVazia(P)) {
-        notacaoPosfixa[j++] = desempilhar(P);
     }
-
-    notacaoPosfixa[j] = '\0';
+    while (!pilhaVazia(P)) {
+        expPosFixa[j++] = desempilhar(P);
+    }
+    expPosFixa[j] = '\0';
     liberarPilha(P);
-    return notacaoPosfixa;
+    return expPosFixa;
 }
 
 int verificarEstruturaInfixa(char *notacaoInfixa) {
@@ -200,4 +199,5 @@ int verificarPilhaVazia(pilha P){
     else {
         return 0;
     }
+
 }
