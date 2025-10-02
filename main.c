@@ -7,26 +7,26 @@
 typedef struct Elemento { 
     char caractere;
     struct Elemento *proximo;
-}elemento; //struct de um elemento da pilha (contém um caractere e um ponteiro para o próx. elemnto na pilha)
+}elemento; //elemento da pilha (contém um caractere e um ponteiro para o próx. elemento na pilha)
 
 typedef struct Pilha {
     elemento *topo;
-}*pilha; //struct com ponteiro que vai apontar para o topo da pilha
+}*pilha; //ponteiro que vai apontar para o topo da pilha
 
-pilha criarPilha(); //protótipo da função para criar pilha de forma dinamica na heap
-void empilhar(pilha P, char c); //protótipo da função para inserir um novo elemento no topo da pilha
-char desempilhar(pilha P); //protótipo da função para remover o elemento do tipo da pilha e depois retornar o respectivo caractere
-int verificarPilhaVazia(pilha P); //protótipo da função para verificar se a pilha tá vazia
-char *notacaoInfixaParaPosfixa(char *notacaoInfixa); //protótipo da função para converter notação infixa para notação posfixa
-int verificarEstruturaInfixa(char *notacaoInfixa); //protótipo da função para verificar se a notação infixa tem ( ) e [ ] corretos
-void liberarElementos(elemento *elem); //protótipo da função para liberar todos os elementos da pilha
-void liberarPilha(pilha P); //protótipo da função para liberar a pilha da heap
+pilha criarPilha(); //criar pilha de forma dinamica na heap
+void empilhar(pilha P, char c); //inserir um novo elemento no topo da pilha
+char desempilhar(pilha P); //remover o elemento do tipo da pilha e depois retornar o respectivo caractere
+int verificarPilhaVazia(pilha P); //verificar se a pilha tá vazia
+char *notacaoInfixaParaPosfixa(char *notacaoInfixa); //converter notação infixa para notação posfixa
+int verificarEstruturaInfixa(char *notacaoInfixa); //verificar se a notação infixa tem ( ) e [ ] corretos
+void liberarElementos(elemento *elem); //liberar todos os elementos da pilha
+void liberarPilha(pilha P); //liberar a pilha da heap
 
 int main() {
     char notacaoInfixa[TAM_MAX];
     char *notacaoPosfixa;
     scanf("%[^\n]", notacaoInfixa);
-    if (verificarEstruturaInfixa(notacaoInfixa)) { //estrutura condicional para verificar se a notação infixa está na estrutura correta
+    if (verificarEstruturaInfixa(notacaoInfixa)) { //verificar se a notação infixa está na estrutura correta
         notacaoPosfixa = notacaoInfixaParaPosfixa(notacaoInfixa);
         printf("%s\n", notacaoPosfixa);
         free(notacaoPosfixa);
@@ -36,7 +36,7 @@ int main() {
 
 pilha criarPilha() {
     pilha P = malloc(sizeof(*P));
-    if (P == NULL) { //verifica se a alocação dinamica da pilha na heap deu certo
+    if (P == NULL) { //verificar se a alocação dinamica da pilha na heap deu certo
         return NULL;
     }
     P->topo = NULL;
@@ -46,17 +46,17 @@ pilha criarPilha() {
 void empilhar(pilha P, char c) {
     elemento *elem;
     elem = malloc(sizeof(elemento));
-    if (elem == NULL) { //verifica se a alocação dinamica da memoria para o elemento na heap deu certo
+    if (elem == NULL) { //verificar se a alocação dinamica da memoria para o elemento na heap deu certo
         return;
     }
     elem->proximo = P->topo;
-    P->topo = elem; //insere o novo elemento alocado no topo da pilha
+    P->topo = elem; //inserir o novo elemento alocado no topo da pilha
     elem->caractere = c;
     return;
 }
 
 char desempilhar(pilha P) {
-    if (P == 0 || P->topo == 0) { //P == 0 -> verificar se a pilha não existe; P->topo == 0 -> verificar se a pilha existe e não tem elemento nela
+    if (P == 0 || P->topo == 0) { //verificar se a pilha não existe e verificar se a pilha existe e não tem elemento nela
         return '\0';
     }
     char c_auxiliar;
@@ -64,7 +64,7 @@ char desempilhar(pilha P) {
     auxiliar = P->topo;
     P->topo = P->topo->proximo;
     c_auxiliar = auxiliar->caractere; //guardar o valor do caractere que será retornado
-    free(auxiliar); //libera a memória do elemento removido anteriormente
+    free(auxiliar); //liberar a memória do elemento removido anteriormente
     return c_auxiliar;
 }
 
@@ -72,11 +72,11 @@ char *notacaoInfixaParaPosfixa(char *notacaoInfixa) {
     char *notacaoPosfixa;
     char caractere;
     int tamanho = strlen(notacaoInfixa);
-    notacaoPosfixa = malloc(sizeof(char) * (tamanho+1)); //alocar memória na heap para a notacao posfixa (tamanho+1 por causa do \0 no final)
-    if (notacaoPosfixa == NULL) { //verificar se a alocação dinamica da memoria para a notacao posfixa na heap deu certo
+    notacaoPosfixa = malloc(sizeof(char) * (tamanho+1)); //alocar memória na heap (tamanho+1 por causa do \0 no final)
+    if (notacaoPosfixa == NULL) { //verificar se a alocação dinamica da memoria na heap deu certo
         return NULL;
     }
-    pilha P = criarPilha(); //chama a funcao para criar pilha para guardar os operadoes (+ - * / ^) para a conversao infixa -> posfixa
+    pilha P = criarPilha(); //chamar a funcao para criar pilha para guardar os operadoes (+ - * / ^)
     if (P == NULL) {
         free(notacaoPosfixa);
         return NULL;
