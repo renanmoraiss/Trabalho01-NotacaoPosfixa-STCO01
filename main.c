@@ -15,7 +15,7 @@ typedef struct Pilha {
 
 pilha criarPilha(); //criar pilha de forma dinamica na heap
 void empilhar(pilha P, char c); //inserir um novo elemento no topo da pilha
-char desempilhar(pilha P); //remover o elemento do tipo da pilha e depois retornar o respectivo caractere
+char desempilhar(pilha P); //remover o elemento do topo da pilha e depois retornar o respectivo caractere
 int verificarPilhaVazia(pilha P); //verificar se a pilha tá vazia
 char *notacaoInfixaParaPosfixa(char *notacaoInfixa); //converter notação infixa para notação posfixa
 int verificarEstruturaInfixa(char *notacaoInfixa); //verificar se a notação infixa tem ( ) e [ ] corretos
